@@ -56,20 +56,9 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 		return nil, fmt.Errorf("Syntax error: Was expecting '{', got '%v'", lit)
 	}
 
-	var firstWord bytes.Buffer
-
-	for {
-		tok, lit = p.scanSkipWhitespace()
-		if tok == EOF {
-			break
-		}
-
-		if tok != Illegal {
-			p.unscan()
-			break
-		}
-
-		firstWord.WriteString(lit)
+	firstWord, err := p.parseWord()
+	if err != nil {
+		return nil, err
 	}
 
 	tok, lit = p.scanSkipWhitespace()
@@ -77,20 +66,13 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 		return nil, fmt.Errorf("Syntax error: Was expecting '|', got '%v'", lit)
 	}
 
-	var secondWord bytes.Buffer
+	if p.is(Whitespace) {
+		p.scan()
+	}
 
-	for {
-		tok, lit = p.scanSkipWhitespace()
-		if tok == EOF {
-			break
-		}
-
-		if tok != Illegal {
-			p.unscan()
-			break
-		}
-
-		secondWord.WriteString(lit)
+	secondWord, err := p.parseWord()
+	if err != nil {
+		return nil, err
 	}
 
 	tok, lit = p.scanSkipWhitespace()
@@ -107,16 +89,24 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 }
 
 func (p *Parser) parseWords() (fmt.Stringer, error) {
-	// white not EOF, or Or or CloseBracket add to lit buffer
+	word, err := p.parseWord()
+	if err != nil {
+		return nil, err
+	}
+
+	return Text{word.String()}, nil
+}
+
+func (p *Parser) parseWord() (bytes.Buffer, error) {
 	var buf bytes.Buffer
+
 	for {
 		tok, lit := p.scan()
-
 		if tok == EOF {
 			break
 		}
 
-		if tok == OpenStatement || tok == Or || tok == CloseStatement {
+		if tok != Illegal && tok != Whitespace {
 			p.unscan()
 			break
 		}
@@ -124,7 +114,7 @@ func (p *Parser) parseWords() (fmt.Stringer, error) {
 		buf.WriteString(lit)
 	}
 
-	return Text{buf.String()}, nil
+	return buf, nil
 }
 
 func (p *Parser) is(ts ...Token) bool {
