@@ -7,6 +7,7 @@ const (
 	Illegal Token = iota + 1
 	EOF
 	Whitespace
+	Any
 
 	// Brackets
 	OpenStatement  // {
