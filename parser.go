@@ -51,6 +51,8 @@ func (p *Parser) parseStatement() (fmt.Stringer, error) {
 }
 
 func (p *Parser) parseOptions() (fmt.Stringer, error) {
+	n := p.n
+
 	tok, lit := p.scan()
 	if tok != OpenStatement {
 		return nil, fmt.Errorf("Syntax error: Was expecting '{', got '%v'", lit)
@@ -58,15 +60,31 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 
 	var words []string
 	for {
-		word, err := p.parseWord()
-		if err != nil {
-			return nil, err
+		spam := &Spam{}
+		for {
+			word, err := p.parseStatement()
+			if err != nil {
+				fmt.Println(err, word)
+				p.reset(n)
+				return nil, err
+			}
+
+			spam.words = append(spam.words, word)
+
+			tok, lit = p.scan()
+			p.unscan()
+			if tok == OpenStatement {
+				continue
+			}
+
+			break
 		}
 
-		words = append(words, word.String())
+		words = append(words, spam.String())
 
-		tok, lit = p.scanSkipWhitespace()
+		tok, lit = p.scan()
 		if tok != Or {
+			fmt.Println("ornot", tok, lit)
 			p.unscan()
 			break
 		}
