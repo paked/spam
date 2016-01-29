@@ -58,13 +58,12 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 		return nil, fmt.Errorf("Syntax error: Was expecting '{', got '%v'", lit)
 	}
 
-	var words []string
+	var words []fmt.Stringer
 	for {
 		spam := &Spam{}
 		for {
 			word, err := p.parseStatement()
 			if err != nil {
-				fmt.Println(err, word)
 				p.reset(n)
 				return nil, err
 			}
@@ -80,11 +79,10 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 			break
 		}
 
-		words = append(words, spam.String())
+		words = append(words, spam)
 
 		tok, lit = p.scan()
 		if tok != Or {
-			fmt.Println("ornot", tok, lit)
 			p.unscan()
 			break
 		}

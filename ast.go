@@ -28,11 +28,11 @@ func (t Text) String() string {
 }
 
 type Option struct {
-	Either []string
+	Either []fmt.Stringer
 }
 
 func (o Option) String() string {
 	word := o.Either[rand.Intn(len(o.Either))]
 
-	return word
+	return word.String()
 }

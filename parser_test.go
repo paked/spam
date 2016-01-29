@@ -19,7 +19,7 @@ func TestParser(t *testing.T) {
 }*/
 
 func TestNestedParser(t *testing.T) {
-	src := `... {hi{harrison|barry|something}|this is kill{hey|party|something}}`
+	src := `hey{a|b}... {hi{harrison|barry|something}|this is kill{hey|party|something}}`
 
 	p := NewParser(NewLexer(strings.NewReader(src)))
 
