@@ -56,23 +56,20 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 		return nil, fmt.Errorf("Syntax error: Was expecting '{', got '%v'", lit)
 	}
 
-	firstWord, err := p.parseWord()
-	if err != nil {
-		return nil, err
-	}
+	var words []string
+	for {
+		word, err := p.parseWord()
+		if err != nil {
+			return nil, err
+		}
 
-	tok, lit = p.scanSkipWhitespace()
-	if tok != Or {
-		return nil, fmt.Errorf("Syntax error: Was expecting '|', got '%v'", lit)
-	}
+		words = append(words, word.String())
 
-	if p.is(Whitespace) {
-		p.scan()
-	}
-
-	secondWord, err := p.parseWord()
-	if err != nil {
-		return nil, err
+		tok, lit = p.scanSkipWhitespace()
+		if tok != Or {
+			p.unscan()
+			break
+		}
 	}
 
 	tok, lit = p.scanSkipWhitespace()
@@ -81,10 +78,7 @@ func (p *Parser) parseOptions() (fmt.Stringer, error) {
 	}
 
 	return Option{
-		Either: []string{
-			firstWord.String(),
-			secondWord.String(),
-		},
+		Either: words,
 	}, nil
 }
 
