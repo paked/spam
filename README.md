@@ -6,7 +6,7 @@ A program to generate random spam from a template. Inspired by James Curran post
 
 The template
 ```
-Hello, {Harrison | Barker}
+Hello, {Harrison|Barker}
 ```
 
 Could generate the responses

@@ -7,7 +7,7 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	src := `hello, {harrison | barty}. How are you{! | ?}`
+	src := `hello, {harrison|barty}. How are you{!|?}`
 
 	p := NewParser(NewLexer(strings.NewReader(src)))
 
