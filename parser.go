@@ -23,7 +23,7 @@ func (p *Parser) Parse() *Spam {
 
 	for {
 		n := p.n
-		tok, _ := p.scanSkipWhitespace()
+		tok, _ := p.scan()
 		if tok == EOF {
 			break
 		}
